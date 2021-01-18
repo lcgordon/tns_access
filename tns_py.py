@@ -34,6 +34,7 @@ class TNSParser(HTMLParser):
         #clear out all the gunky bits that will show up
         if data.strip() != "" and not data.strip().startswith("@") and not data.strip().startswith("<"):
             #start saving
+            #print(data.strip())
             if data.strip() == "RA/DEC (2000)":
                 self.saving = True
             #save    
@@ -43,18 +44,19 @@ class TNSParser(HTMLParser):
             if data.strip() == "Reporter/s":
                 self.saving = False
             
-def SN_page(SN_name):
+def SN_page(SN_name, printfortesting = False):
     """ Retrieves the webpage for the given SN
     Parses HTML and returns the RA and DEC in hours and in decimal form, 
     the type (if it exists) the redshift (if it exists) and the discovery date and magnitude"""
     url = "https://www.wis-tns.org/object/" + SN_name 
-    r = requests.get(url)
-    
-    print(r.status_code) #200 indicates a success
     parser = TNSParser()
-    parser.feed(r.text)
+    r = requests.get(url)
+    if printfortesting:
+        print(r.status_code) #200 indicates a success
+        print(parser.info_of_interest)
     
-    #print(parser.info_of_interest)
+    parser.info_of_interest = list()
+    parser.feed(r.text)
     returner = parser.info_of_interest
     
     RA_DEC_hr = ""
@@ -79,7 +81,8 @@ def SN_page(SN_name):
         discodate = returner[12]
         discomag = returner[18]
     
-        
+    r.close()
+    del(returner, parser)
         
     return RA_DEC_hr, RA_DEC_decimal, type_sn, redshift, discodate, discomag
         
@@ -183,7 +186,7 @@ def TNS_get_CSV(savefile, url):
     with open(savefile, 'wb') as f:
         f.write(data.content)
 
-  
+ #%% 
 #TESTING
 #RA_DEC_hr, RA_DEC_decimal, type_sn, redshift, discodate, discomag = SN_page("2020udr")
 #print(RA_DEC_hr, RA_DEC_decimal, type_sn, redshift, discodate, discomag)  
@@ -194,13 +197,7 @@ def TNS_get_CSV(savefile, url):
 #print(url)    
 #TNS_get_CSV("/tns-results.csv", url)
     
-    
-    
-    
-    
-    
-    
-    
+
     
     
     
