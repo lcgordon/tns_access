@@ -132,8 +132,8 @@ def CSV_URL(date_start = None, date_end = None, discovered_within = None,
     download_suffix = "&num_page=500&format=csv"
     
     #eventually will need to iterate through pages for max results
-    i = 0
-    page_suffix = "&page=" + str(i)
+    #i = 0
+    #page_suffix = "&page=" + str(i)
     
     query = ""
     if date_start is not None and date_end is not None:
@@ -182,17 +182,24 @@ def CSV_URL(date_start = None, date_end = None, discovered_within = None,
     if decl_range_max is not None:
         query = query + "&decl_range_max=" + decl_range_max
     
-    url = prefix + query + download_suffix + page_suffix
+    url = prefix + query + download_suffix #+ page_suffix
     
     return url
 
 
     
-def TNS_get_CSV(savefile, url):
+def TNS_get_CSV(savepath, filelabel, url):
     """ Function to download a CSV from TNS given the URL for that search"""
-    data = requests.get(url, allow_redirects = True)
-    with open(savefile, 'wb') as f:
-        f.write(data.content)
+
+    for i in range(2): #ifthere's more than 1000 results...sucks
+        savefile = savepath + filelabel + "-" + str(i) + ".csv"
+        url = url + "&page=" + str(i)
+        data = requests.get(url, allow_redirects = True)
+        #print(data.content)
+        #print("\n\n\n")
+        #ie,"./filelabel-1.png"
+        with open(savefile, 'wb') as f:
+            f.write(data.content)
 
  #%% 
 #TESTING
@@ -204,8 +211,9 @@ def TNS_get_CSV(savefile, url):
   #          include_frb = False, name = None, name_like = False, discovery_mag_min = None,
    #         discovery_mag_max= None)
 #print(url)    
-#TNS_get_CSV("/tns-results.csv", url)
-    
+#savehere = "C:/Users/conta/Downloads/"
+#filelabel= "testinggetcsv"
+#TNS_get_CSV(savehere,filelabel, url)  
 
     
     
