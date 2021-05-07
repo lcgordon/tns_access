@@ -1,2 +1,2 @@
 # tns_access
-Functions to access the transient name server thru python
+Functions to access the Transient Name Server through Python. 
